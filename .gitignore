@@ -1,0 +1,27 @@
+﻿# environment / secrets (real logins live here - never upload)
+.env
+apk_tests/apk.env
+kitchen_apk_tests/kitchen.env
+
+# Python / tools
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+tools/
+node_modules/
+
+# test output
+test-results/
+results/
+failures/
+explore/
+popup_log.txt
+appium.log
+screen.png
+screen.xml
+screen_elements.txt
+screens_manager/
+apk_tests/Bug_Report_Manager_APK.*
+kitchen_apk_tests/Bug_Report_Kitchen_APK.*
+tests/assets/test_banner.png
