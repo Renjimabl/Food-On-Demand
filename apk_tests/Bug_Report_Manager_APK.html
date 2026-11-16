@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset='utf-8'><title>Bug Report - Manager APK</title><style>body{font-family:Segoe UI,Arial,sans-serif;max-width:960px;margin:24px auto;padding:0 16px;color:#222}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid #ccc;padding:6px 8px;text-align:left}th{background:#f2f2f2}code{background:#f4f4f4;padding:1px 4px}blockquote{background:#fff7e6;border-left:4px solid #e69500;margin:10px 0;padding:6px 12px}h1{color:#c45500}</style></head><body><h1>Bug Report - Manager APK</h1>
+<p>Generated: 16-Nov-2026 16:44  |  Source: <code>results\apk_junit.xml</code>  |  App: Manager QA v1.0.1 (com.softland.foodondemand)</p>
+<h2>1. Summary</h2>
+<table>
+<tr><th>Result</th><th>Count</th></tr>
+<tr><td>Passed</td><td>8</td></tr>
+<tr><td>Failed - real findings (bugs)</td><td>6</td></tr>
+<tr><td>Environment problem (not a bug)</td><td>4</td></tr>
+<tr><td>Skipped (not run)</td><td>1</td></tr>
+<tr><td>Known issue (expected failure)</td><td>0</td></tr>
+<tr><td>Setup error</td><td>0</td></tr>
+<tr><td><b>Total tests</b></td><td><b>19</b></td></tr>
+</table>
+<blockquote>4 test(s) did not finish because the test tool or phone failed (Appium helper crash, phone not connected, login screen not reached). They are listed in section 4 and are not bugs.</blockquote>
+<h2>2. Results by module</h2>
+<table>
+<tr><th>Module</th><th>Passed</th><th>Failed</th><th>Env problem</th><th>Skipped</th><th>Known</th></tr>
+<tr><td>Orders</td><td>8</td><td>6</td><td>4</td><td>1</td><td>0</td></tr>
+</table>
+<h2>3. Bugs found</h2>
+<table>
+<tr><th>ID</th><th>Module</th><th>Failed check</th><th>Severity</th><th>Result</th></tr>
+<tr><td>MBUG-01</td><td>Orders</td><td>Orders filter chips present[Preparing]</td><td>High</td><td>AssertionError: Chip &#x27;Preparing&#x27; with a count was not found</td></tr>
+<tr><td>MBUG-02</td><td>Orders</td><td>Orders filter chips present[Ready]</td><td>High</td><td>AssertionError: Chip &#x27;Ready&#x27; with a count was not found</td></tr>
+<tr><td>MBUG-03</td><td>Orders</td><td>Orders filter chips present[Served]</td><td>High</td><td>AssertionError: Chip &#x27;Served&#x27; with a count was not found</td></tr>
+<tr><td>MBUG-04</td><td>Orders</td><td>Orders all chip matches list label</td><td>High</td><td>assert None == 5</td></tr>
+<tr><td>MBUG-05</td><td>Orders</td><td>Orders total matches dashboard total</td><td>High</td><td>AssertionError: Home says 5 orders, Orders screen says None</td></tr>
+<tr><td>MBUG-06</td><td>Orders</td><td>Orders chip counts add up</td><td>High</td><td>TypeError: &#x27;&lt;=&#x27; not supported between instances of &#x27;int&#x27; and &#x27;NoneTyp…</td></tr>
+</table>
+<p>Full steps / expected / actual for each: <code>python generate_bug_report.py --detail</code></p>
+<h2>4. Environment problems (not application bugs)</h2>
+<p>4 test(s) could not finish because the Appium helper / phone failed. Re-run them; they are not bugs.</p>
+<h2>5. Skipped tests</h2>
+<p>1 test(s) skipped (nothing to test today, e.g. no Ready orders).</p>
+<h2>6. Known issues already marked in the tests</h2>
+<p>None.</p></body></html>

@@ -1,0 +1,803 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="4" failures="6" skipped="1" tests="19" time="567.820" timestamp="2026-11-16T16:31:26.969380+05:30" hostname="WSSPC-009"><testcase classname="test_apk_orders" name="test_orders_screen_title" time="61.198" /><testcase classname="test_apk_orders" name="test_orders_network_and_server_status_shown" time="7.619" /><testcase classname="test_apk_orders" name="test_orders_search_box_present" time="6.870" /><testcase classname="test_apk_orders" name="test_orders_filter_chips_present[All]" time="3.895"><error message="failed on setup with &quot;selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: Could not proxy command to the remote server. Original error: socket hang up&#10;Stacktrace:&#10;UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not proxy command to the remote server. Original error: socket hang up&#10;[+11 more lines; full report in element text]">home = &lt;appium.webdriver.webdriver.WebDriver (session="636af33e-9b50-4371-b56b-41238697c72a")&gt;
+
+    @pytest.fixture
+    def orders(home):
+&gt;       assert ui.open_screen(home, "Orders", TITLE), "Orders tab did not open the 'All Requests' screen"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+test_apk_orders.py:19: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+ui.py:189: in open_screen
+    return wait_for_text(d, title, seconds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ui.py:45: in wait_for_text
+    if has_text(d, text):
+       ^^^^^^^^^^^^^^^^^
+ui.py:39: in has_text
+    return len(d.find_elements(*by_text(text))) &gt; 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:1005: in find_elements
+    return self.execute(Command.FIND_ELEMENTS, {"using": by, "value": value})["value"] or []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:566: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;appium.webdriver.errorhandler.MobileErrorHandler object at 0x000001F82E3F5FD0&gt;
+response = {'status': 500, 'value': '{"value":{"error":"unknown error","message":"An unknown server-side error occurred while pro...ode_modules\\\\appium\\\\node_modules\\\\@appium\\\\base-driver\\\\lib\\\\basedriver\\\\commands\\\\find.ts:79:12)"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """
+        https://www.w3.org/TR/webdriver/#errors
+        """
+        payload = response.get('value', '')
+        if isinstance(payload, dict):
+            payload_dict = payload
+        else:
+            try:
+                payload_dict = json.loads(payload)
+            except (json.JSONDecodeError, TypeError):
+                return
+            if not isinstance(payload_dict, dict):
+                return
+        value = payload_dict.get('value')
+        if not isinstance(value, dict):
+            return
+        error = value.get('error')
+        if not error:
+            return
+    
+        message = value.get('message', error)
+        stacktrace = value.get('stacktrace', '')
+        # In theory, we should also be checking HTTP status codes.
+        # Java client, for example, prints a warning if the actual `error`
+        # value does not match to the response's HTTP status code.
+        exception_class: type[sel_exceptions.WebDriverException] = ERROR_TO_EXC_MAPPING.get(
+            error, sel_exceptions.WebDriverException
+        )
+        if exception_class is sel_exceptions.WebDriverException and message:
+            if message == 'No such context found.':
+                exception_class = appium_exceptions.NoSuchContextException
+            elif message == 'That command could not be executed in the current context.':
+                exception_class = appium_exceptions.InvalidSwitchToTargetException
+    
+        if exception_class is sel_exceptions.UnexpectedAlertPresentException:
+            raise sel_exceptions.UnexpectedAlertPresentException(
+                msg=message,
+                stacktrace=format_stacktrace(stacktrace),
+                alert_text=value.get('data'),
+            )
+&gt;       raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))
+E       selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: Could not proxy command to the remote server. Original error: socket hang up
+E       Stacktrace:
+E       UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not proxy command to the remote server. Original error: socket hang up
+E           at UIA2Proxy.command (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\jsonwp-proxy\proxy.js:359:13)
+E           at processTicksAndRejections (node:internal/process/task_queues:105:5)
+E           at AndroidUiautomator2Driver.doFindElementOrEls (C:\Users\WSSPC-009\.appium\node_modules\appium-uiautomator2-driver\lib\commands\find.js:40:5)
+E           at doFind (C:\Users\WSSPC-009\.appium\node_modules\appium-uiautomator2-driver\node_modules\appium-android-driver\lib\commands\find.ts:47:17)
+E           at wrappedCondFn (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\basedriver\commands\timeout.ts:141:14)
+E           at spin (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\asyncbox\lib\asyncbox.js:219:20)
+E           at waitForCondition (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\asyncbox\lib\asyncbox.js:236:10)
+E           at AndroidUiautomator2Driver.implicitWaitForCondition (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\basedriver\commands\timeout.ts:143:12)
+E           at AndroidUiautomator2Driver.findElOrEls (C:\Users\WSSPC-009\.appium\node_modules\appium-uiautomator2-driver\node_modules\appium-android-driver\lib\commands\find.ts:70:5)
+E           at AndroidUiautomator2Driver.findElOrElsWithProcessing (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\basedriver\commands\find.ts:60:12)
+E           at AndroidUiautomator2Driver.findElements (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\basedriver\commands\find.ts:79:12)
+
+..\venv\Lib\site-packages\appium\webdriver\errorhandler.py:126: WebDriverException</error></testcase><testcase classname="test_apk_orders" name="test_orders_filter_chips_present[Preparing]" time="106.492"><failure message="AssertionError: Chip 'Preparing' with a count was not found&#10;assert None is not None&#10; +  where None = &lt;function chip_count at 0x000001F82E3089A0&gt;(&lt;appium.webdriver.webdriver.WebDriver (session=&quot;b47a7a4d-2b48-481e-a362-d1743b292162&quot;)&gt;, 'Preparing')&#10; +    where &lt;function chip_count at 0x000001F82E3089A0&gt; = ui.chip_count">orders = &lt;appium.webdriver.webdriver.WebDriver (session="b47a7a4d-2b48-481e-a362-d1743b292162")&gt;
+chip = 'Preparing'
+
+    @pytest.mark.parametrize("chip", ["All", "Preparing", "Ready", "Served"])
+    def test_orders_filter_chips_present(orders, chip):
+        """Look at the status chips.
+        Expected: All, Preparing, Ready and Served chips are shown, each with a count."""
+&gt;       assert ui.chip_count(orders, chip) is not None, f"Chip '{chip}' with a count was not found"
+E       AssertionError: Chip 'Preparing' with a count was not found
+E       assert None is not None
+E        +  where None = &lt;function chip_count at 0x000001F82E3089A0&gt;(&lt;appium.webdriver.webdriver.WebDriver (session="b47a7a4d-2b48-481e-a362-d1743b292162")&gt;, 'Preparing')
+E        +    where &lt;function chip_count at 0x000001F82E3089A0&gt; = ui.chip_count
+
+test_apk_orders.py:46: AssertionError</failure></testcase><testcase classname="test_apk_orders" name="test_orders_filter_chips_present[Ready]" time="8.333"><failure message="AssertionError: Chip 'Ready' with a count was not found&#10;assert None is not None&#10; +  where None = &lt;function chip_count at 0x000001F82E3089A0&gt;(&lt;appium.webdriver.webdriver.WebDriver (session=&quot;b47a7a4d-2b48-481e-a362-d1743b292162&quot;)&gt;, 'Ready')&#10; +    where &lt;function chip_count at 0x000001F82E3089A0&gt; = ui.chip_count">orders = &lt;appium.webdriver.webdriver.WebDriver (session="b47a7a4d-2b48-481e-a362-d1743b292162")&gt;
+chip = 'Ready'
+
+    @pytest.mark.parametrize("chip", ["All", "Preparing", "Ready", "Served"])
+    def test_orders_filter_chips_present(orders, chip):
+        """Look at the status chips.
+        Expected: All, Preparing, Ready and Served chips are shown, each with a count."""
+&gt;       assert ui.chip_count(orders, chip) is not None, f"Chip '{chip}' with a count was not found"
+E       AssertionError: Chip 'Ready' with a count was not found
+E       assert None is not None
+E        +  where None = &lt;function chip_count at 0x000001F82E3089A0&gt;(&lt;appium.webdriver.webdriver.WebDriver (session="b47a7a4d-2b48-481e-a362-d1743b292162")&gt;, 'Ready')
+E        +    where &lt;function chip_count at 0x000001F82E3089A0&gt; = ui.chip_count
+
+test_apk_orders.py:46: AssertionError</failure></testcase><testcase classname="test_apk_orders" name="test_orders_filter_chips_present[Served]" time="8.458"><failure message="AssertionError: Chip 'Served' with a count was not found&#10;assert None is not None&#10; +  where None = &lt;function chip_count at 0x000001F82E3089A0&gt;(&lt;appium.webdriver.webdriver.WebDriver (session=&quot;b47a7a4d-2b48-481e-a362-d1743b292162&quot;)&gt;, 'Served')&#10; +    where &lt;function chip_count at 0x000001F82E3089A0&gt; = ui.chip_count">orders = &lt;appium.webdriver.webdriver.WebDriver (session="b47a7a4d-2b48-481e-a362-d1743b292162")&gt;
+chip = 'Served'
+
+    @pytest.mark.parametrize("chip", ["All", "Preparing", "Ready", "Served"])
+    def test_orders_filter_chips_present(orders, chip):
+        """Look at the status chips.
+        Expected: All, Preparing, Ready and Served chips are shown, each with a count."""
+&gt;       assert ui.chip_count(orders, chip) is not None, f"Chip '{chip}' with a count was not found"
+E       AssertionError: Chip 'Served' with a count was not found
+E       assert None is not None
+E        +  where None = &lt;function chip_count at 0x000001F82E3089A0&gt;(&lt;appium.webdriver.webdriver.WebDriver (session="b47a7a4d-2b48-481e-a362-d1743b292162")&gt;, 'Served')
+E        +    where &lt;function chip_count at 0x000001F82E3089A0&gt; = ui.chip_count
+
+test_apk_orders.py:46: AssertionError</failure></testcase><testcase classname="test_apk_orders" name="test_orders_all_chip_matches_list_label" time="9.772"><failure message="assert None == 5&#10; +  where None = &lt;function chip_count at 0x000001F82E3089A0&gt;(&lt;appium.webdriver.webdriver.WebDriver (session=&quot;b47a7a4d-2b48-481e-a362-d1743b292162&quot;)&gt;, 'All')&#10; +    where &lt;function chip_count at 0x000001F82E3089A0&gt; = ui.chip_count&#10; +  and   5 = &lt;function list_count at 0x000001F82E308A40&gt;(&lt;appium.webdriver.webdriver.WebDriver (session=&quot;b47a7a4d-2b48-481e-a362-d1743b292162&quot;)&gt;, 'order')&#10; +    where &lt;function list_count at 0x000001F82E308A40&gt; = ui.list_count">orders = &lt;appium.webdriver.webdriver.WebDriver (session="b47a7a4d-2b48-481e-a362-d1743b292162")&gt;
+
+    def test_orders_all_chip_matches_list_label(orders):
+        """Compare the number on the All chip with the 'N orders' label.
+        Expected: both numbers are the same."""
+&gt;       assert ui.chip_count(orders, "All") == ui.list_count(orders, "order")
+E       assert None == 5
+E        +  where None = &lt;function chip_count at 0x000001F82E3089A0&gt;(&lt;appium.webdriver.webdriver.WebDriver (session="b47a7a4d-2b48-481e-a362-d1743b292162")&gt;, 'All')
+E        +    where &lt;function chip_count at 0x000001F82E3089A0&gt; = ui.chip_count
+E        +  and   5 = &lt;function list_count at 0x000001F82E308A40&gt;(&lt;appium.webdriver.webdriver.WebDriver (session="b47a7a4d-2b48-481e-a362-d1743b292162")&gt;, 'order')
+E        +    where &lt;function list_count at 0x000001F82E308A40&gt; = ui.list_count
+
+test_apk_orders.py:52: AssertionError</failure></testcase><testcase classname="test_apk_orders" name="test_orders_total_matches_dashboard_total" time="9.975"><failure message="AssertionError: Home says 5 orders, Orders screen says None&#10;assert None == 5&#10; +  where None = &lt;function chip_count at 0x000001F82E3089A0&gt;(&lt;appium.webdriver.webdriver.WebDriver (session=&quot;b47a7a4d-2b48-481e-a362-d1743b292162&quot;)&gt;, 'All')&#10; +    where &lt;function chip_count at 0x000001F82E3089A0&gt; = ui.chip_count">home = &lt;appium.webdriver.webdriver.WebDriver (session="b47a7a4d-2b48-481e-a362-d1743b292162")&gt;
+
+    def test_orders_total_matches_dashboard_total(home):
+        """Compare Today's Overview TOTAL on Home with the All chip on Orders.
+        Expected: the same number of orders is shown on both screens."""
+        total = int(home.find_element(*ui.by_id("tv_stat_total")).text)
+        assert ui.open_screen(home, "Orders", TITLE)
+        time.sleep(3)
+&gt;       assert ui.chip_count(home, "All") == total, \
+            f"Home says {total} orders, Orders screen says {ui.chip_count(home, 'All')}"
+E       AssertionError: Home says 5 orders, Orders screen says None
+E       assert None == 5
+E        +  where None = &lt;function chip_count at 0x000001F82E3089A0&gt;(&lt;appium.webdriver.webdriver.WebDriver (session="b47a7a4d-2b48-481e-a362-d1743b292162")&gt;, 'All')
+E        +    where &lt;function chip_count at 0x000001F82E3089A0&gt; = ui.chip_count
+
+test_apk_orders.py:61: AssertionError</failure></testcase><testcase classname="test_apk_orders" name="test_orders_chip_counts_add_up" time="12.397"><failure message="TypeError: '&lt;=' not supported between instances of 'int' and 'NoneType'">orders = &lt;appium.webdriver.webdriver.WebDriver (session="b47a7a4d-2b48-481e-a362-d1743b292162")&gt;
+
+    def test_orders_chip_counts_add_up(orders):
+        """Add Preparing + Ready + Served (+ other statuses) and compare with All.
+        Expected: the status counts do not add up to more than All."""
+        all_n = ui.chip_count(orders, "All")
+        parts = [ui.chip_count(orders, c) or 0 for c in ("Preparing", "Ready", "Served")]
+&gt;       assert sum(parts) &lt;= all_n, f"Status chips {parts} add up to more than All ({all_n})"
+               ^^^^^^^^^^^^^^^^^^^
+E       TypeError: '&lt;=' not supported between instances of 'int' and 'NoneType'
+
+test_apk_orders.py:70: TypeError</failure></testcase><testcase classname="test_apk_orders" name="test_orders_cards_show_order_number_and_table" time="8.586" /><testcase classname="test_apk_orders" name="test_orders_newest_first" time="7.830" /><testcase classname="test_apk_orders" name="test_orders_filter_ready_matches_count" time="7.845"><skipped type="pytest.skip" message="No Ready orders today">E:\IDrive\Renjima\Food on demand\dineflash-tests\apk_tests\test_apk_orders.py:93: No Ready orders today</skipped></testcase><testcase classname="test_apk_orders" name="test_orders_search_no_match_shows_empty" time="45.683"><error message="failed on setup with &quot;selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: 'POST /elements' cannot be proxied to UiAutomator2 server because the instrumentation process is not running (probably crashed). Check the server log and/or the logcat output for more details&#10;Stacktrace:&#10;[+12 more lines; full report in element text]">dashboard = &lt;appium.webdriver.webdriver.WebDriver (session="636af33e-9b50-4371-b56b-41238697c72a")&gt;
+
+    @pytest.fixture
+    def home(dashboard):
+        """Make sure each test starts on the Home tab. If the Appium helper crashed, log in again with a new session."""
+        d = _SHARED["dash"]
+        try:
+&gt;           on_home = ui.on_dashboard(d)
+                      ^^^^^^^^^^^^^^^^^^
+
+conftest.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+ui.py:112: in on_dashboard
+    return len(d.find_elements(*by_id("tv_stat_total"))) &gt; 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:1005: in find_elements
+    return self.execute(Command.FIND_ELEMENTS, {"using": by, "value": value})["value"] or []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:566: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;appium.webdriver.errorhandler.MobileErrorHandler object at 0x000001F82F858F50&gt;
+response = {'status': 500, 'value': '{"value":{"error":"unknown error","message":"An unknown server-side error occurred while pro...ode_modules\\\\appium\\\\node_modules\\\\@appium\\\\base-driver\\\\lib\\\\basedriver\\\\commands\\\\find.ts:79:12)"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """
+        https://www.w3.org/TR/webdriver/#errors
+        """
+        payload = response.get('value', '')
+        if isinstance(payload, dict):
+            payload_dict = payload
+        else:
+            try:
+                payload_dict = json.loads(payload)
+            except (json.JSONDecodeError, TypeError):
+                return
+            if not isinstance(payload_dict, dict):
+                return
+        value = payload_dict.get('value')
+        if not isinstance(value, dict):
+            return
+        error = value.get('error')
+        if not error:
+            return
+    
+        message = value.get('message', error)
+        stacktrace = value.get('stacktrace', '')
+        # In theory, we should also be checking HTTP status codes.
+        # Java client, for example, prints a warning if the actual `error`
+        # value does not match to the response's HTTP status code.
+        exception_class: type[sel_exceptions.WebDriverException] = ERROR_TO_EXC_MAPPING.get(
+            error, sel_exceptions.WebDriverException
+        )
+        if exception_class is sel_exceptions.WebDriverException and message:
+            if message == 'No such context found.':
+                exception_class = appium_exceptions.NoSuchContextException
+            elif message == 'That command could not be executed in the current context.':
+                exception_class = appium_exceptions.InvalidSwitchToTargetException
+    
+        if exception_class is sel_exceptions.UnexpectedAlertPresentException:
+            raise sel_exceptions.UnexpectedAlertPresentException(
+                msg=message,
+                stacktrace=format_stacktrace(stacktrace),
+                alert_text=value.get('data'),
+            )
+&gt;       raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))
+E       selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: Could not proxy command to the remote server. Original error: socket hang up
+E       Stacktrace:
+E       UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not proxy command to the remote server. Original error: socket hang up
+E           at UIA2Proxy.command (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\jsonwp-proxy\proxy.js:359:13)
+E           at processTicksAndRejections (node:internal/process/task_queues:105:5)
+E           at AndroidUiautomator2Driver.doFindElementOrEls (C:\Users\WSSPC-009\.appium\node_modules\appium-uiautomator2-driver\lib\commands\find.js:40:5)
+E           at doFind (C:\Users\WSSPC-009\.appium\node_modules\appium-uiautomator2-driver\node_modules\appium-android-driver\lib\commands\find.ts:47:17)
+E           at wrappedCondFn (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\basedriver\commands\timeout.ts:141:14)
+E           at spin (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\asyncbox\lib\asyncbox.js:219:20)
+E           at waitForCondition (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\asyncbox\lib\asyncbox.js:236:10)
+E           at AndroidUiautomator2Driver.implicitWaitForCondition (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\basedriver\commands\timeout.ts:143:12)
+E           at AndroidUiautomator2Driver.findElOrEls (C:\Users\WSSPC-009\.appium\node_modules\appium-uiautomator2-driver\node_modules\appium-android-driver\lib\commands\find.ts:70:5)
+E           at AndroidUiautomator2Driver.findElOrElsWithProcessing (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\basedriver\commands\find.ts:60:12)
+E           at AndroidUiautomator2Driver.findElements (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\basedriver\commands\find.ts:79:12)
+
+..\venv\Lib\site-packages\appium\webdriver\errorhandler.py:126: WebDriverException
+
+During handling of the above exception, another exception occurred:
+
+dashboard = &lt;appium.webdriver.webdriver.WebDriver (session="636af33e-9b50-4371-b56b-41238697c72a")&gt;
+
+    @pytest.fixture
+    def home(dashboard):
+        """Make sure each test starts on the Home tab. If the Appium helper crashed, log in again with a new session."""
+        d = _SHARED["dash"]
+        try:
+            on_home = ui.on_dashboard(d)
+        except Exception:
+            _quit(d)
+&gt;           d = _SHARED["dash"] = _logged_in()
+                                  ^^^^^^^^^^^^
+
+conftest.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+conftest.py:131: in _logged_in
+    if not ui.wait_for(drv, "tv_stat_total", 30):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ui.py:31: in wait_for
+    found = d.find_elements(*by_id(name))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:1005: in find_elements
+    return self.execute(Command.FIND_ELEMENTS, {"using": by, "value": value})["value"] or []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:566: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;appium.webdriver.errorhandler.MobileErrorHandler object at 0x000001F82E406E90&gt;
+response = {'status': 500, 'value': '{"value":{"error":"unknown error","message":"An unknown server-side error occurred while pro...ode_modules\\\\appium\\\\node_modules\\\\@appium\\\\base-driver\\\\lib\\\\basedriver\\\\commands\\\\find.ts:79:12)"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """
+        https://www.w3.org/TR/webdriver/#errors
+        """
+        payload = response.get('value', '')
+        if isinstance(payload, dict):
+            payload_dict = payload
+        else:
+            try:
+                payload_dict = json.loads(payload)
+            except (json.JSONDecodeError, TypeError):
+                return
+            if not isinstance(payload_dict, dict):
+                return
+        value = payload_dict.get('value')
+        if not isinstance(value, dict):
+            return
+        error = value.get('error')
+        if not error:
+            return
+    
+        message = value.get('message', error)
+        stacktrace = value.get('stacktrace', '')
+        # In theory, we should also be checking HTTP status codes.
+        # Java client, for example, prints a warning if the actual `error`
+        # value does not match to the response's HTTP status code.
+        exception_class: type[sel_exceptions.WebDriverException] = ERROR_TO_EXC_MAPPING.get(
+            error, sel_exceptions.WebDriverException
+        )
+        if exception_class is sel_exceptions.WebDriverException and message:
+            if message == 'No such context found.':
+                exception_class = appium_exceptions.NoSuchContextException
+            elif message == 'That command could not be executed in the current context.':
+                exception_class = appium_exceptions.InvalidSwitchToTargetException
+    
+        if exception_class is sel_exceptions.UnexpectedAlertPresentException:
+            raise sel_exceptions.UnexpectedAlertPresentException(
+                msg=message,
+                stacktrace=format_stacktrace(stacktrace),
+                alert_text=value.get('data'),
+            )
+&gt;       raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))
+E       selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: 'POST /elements' cannot be proxied to UiAutomator2 server because the instrumentation process is not running (probably crashed). Check the server log and/or the logcat output for more details
+E       Stacktrace:
+E       UnknownError: An unknown server-side error occurred while processing the command. Original error: 'POST /elements' cannot be proxied to UiAutomator2 server because the instrumentation process is not running (probably crashed). Check the server log and/or the logcat output for more details
+E           at UIA2Proxy.command (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\jsonwp-proxy\proxy.js:359:13)
+E           at processTicksAndRejections (node:internal/process/task_queues:105:5)
+E           at AndroidUiautomator2Driver.doFindElementOrEls (C:\Users\WSSPC-009\.appium\node_modules\appium-uiautomator2-driver\lib\commands\find.js:40:5)
+E           at doFind (C:\Users\WSSPC-009\.appium\node_modules\appium-uiautomator2-driver\node_modules\appium-android-driver\lib\commands\find.ts:47:17)
+E           at wrappedCondFn (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\basedriver\commands\timeout.ts:141:14)
+E           at spin (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\asyncbox\lib\asyncbox.js:219:20)
+E           at waitForCondition (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\asyncbox\lib\asyncbox.js:236:10)
+E           at AndroidUiautomator2Driver.implicitWaitForCondition (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\basedriver\commands\timeout.ts:143:12)
+E           at AndroidUiautomator2Driver.findElOrEls (C:\Users\WSSPC-009\.appium\node_modules\appium-uiautomator2-driver\node_modules\appium-android-driver\lib\commands\find.ts:70:5)
+E           at AndroidUiautomator2Driver.findElOrElsWithProcessing (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\basedriver\commands\find.ts:60:12)
+E           at AndroidUiautomator2Driver.findElements (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\basedriver\commands\find.ts:79:12)
+
+..\venv\Lib\site-packages\appium\webdriver\errorhandler.py:126: WebDriverException</error></testcase><testcase classname="test_apk_orders" name="test_orders_search_by_token_finds_order" time="55.464"><error message="failed on setup with &quot;selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: Could not find a connected Android device in 20000ms&#10;Stacktrace:&#10;UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not find a connected Android device in 20000ms&#10;[+2 more lines; full report in element text]">dashboard = &lt;appium.webdriver.webdriver.WebDriver (session="636af33e-9b50-4371-b56b-41238697c72a")&gt;
+
+    @pytest.fixture
+    def home(dashboard):
+        """Make sure each test starts on the Home tab. If the Appium helper crashed, log in again with a new session."""
+        d = _SHARED["dash"]
+        try:
+&gt;           on_home = ui.on_dashboard(d)
+                      ^^^^^^^^^^^^^^^^^^
+
+conftest.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+ui.py:112: in on_dashboard
+    return len(d.find_elements(*by_id("tv_stat_total"))) &gt; 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:1005: in find_elements
+    return self.execute(Command.FIND_ELEMENTS, {"using": by, "value": value})["value"] or []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:566: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;appium.webdriver.errorhandler.MobileErrorHandler object at 0x000001F82F858F50&gt;
+response = {'status': 404, 'value': '{"value":{"error":"invalid session id","message":"A session is either terminated or not star...\\\WSSPC-009\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\appium\\\\node_modules\\\\raw-body\\\\index.js:287:7)"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """
+        https://www.w3.org/TR/webdriver/#errors
+        """
+        payload = response.get('value', '')
+        if isinstance(payload, dict):
+            payload_dict = payload
+        else:
+            try:
+                payload_dict = json.loads(payload)
+            except (json.JSONDecodeError, TypeError):
+                return
+            if not isinstance(payload_dict, dict):
+                return
+        value = payload_dict.get('value')
+        if not isinstance(value, dict):
+            return
+        error = value.get('error')
+        if not error:
+            return
+    
+        message = value.get('message', error)
+        stacktrace = value.get('stacktrace', '')
+        # In theory, we should also be checking HTTP status codes.
+        # Java client, for example, prints a warning if the actual `error`
+        # value does not match to the response's HTTP status code.
+        exception_class: type[sel_exceptions.WebDriverException] = ERROR_TO_EXC_MAPPING.get(
+            error, sel_exceptions.WebDriverException
+        )
+        if exception_class is sel_exceptions.WebDriverException and message:
+            if message == 'No such context found.':
+                exception_class = appium_exceptions.NoSuchContextException
+            elif message == 'That command could not be executed in the current context.':
+                exception_class = appium_exceptions.InvalidSwitchToTargetException
+    
+        if exception_class is sel_exceptions.UnexpectedAlertPresentException:
+            raise sel_exceptions.UnexpectedAlertPresentException(
+                msg=message,
+                stacktrace=format_stacktrace(stacktrace),
+                alert_text=value.get('data'),
+            )
+&gt;       raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))
+E       selenium.common.exceptions.InvalidSessionIdException: Message: A session is either terminated or not started; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+E       Stacktrace:
+E       NoSuchDriverError: A session is either terminated or not started
+E           at asyncHandler (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\protocol\protocol.js:311:15)
+E           at C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\protocol\protocol.js:514:15
+E           at Layer.handle [as handle_request] (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\layer.js:95:5)
+E           at next (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\route.js:149:13)
+E           at Route.dispatch (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\route.js:119:3)
+E           at Layer.handle [as handle_request] (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\layer.js:95:5)
+E           at C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:284:15
+E           at param (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:365:14)
+E           at param (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:376:14)
+E           at Function.process_params (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:421:3)
+E           at next (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:280:10)
+E           at logger (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\morgan\index.js:144:5)
+E           at Layer.handle [as handle_request] (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\layer.js:95:5)
+E           at trim_prefix (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:328:13)
+E           at C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:286:9
+E           at Function.process_params (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:346:12)
+E           at next (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:280:10)
+E           at C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\body-parser\lib\read.js:137:5
+E           at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+E           at invokeCallback (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\raw-body\index.js:238:16)
+E           at done (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\raw-body\index.js:227:7)
+E           at IncomingMessage.onEnd (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\raw-body\index.js:287:7)
+
+..\venv\Lib\site-packages\appium\webdriver\errorhandler.py:126: InvalidSessionIdException
+
+During handling of the above exception, another exception occurred:
+
+dashboard = &lt;appium.webdriver.webdriver.WebDriver (session="636af33e-9b50-4371-b56b-41238697c72a")&gt;
+
+    @pytest.fixture
+    def home(dashboard):
+        """Make sure each test starts on the Home tab. If the Appium helper crashed, log in again with a new session."""
+        d = _SHARED["dash"]
+        try:
+            on_home = ui.on_dashboard(d)
+        except Exception:
+            _quit(d)
+&gt;           d = _SHARED["dash"] = _logged_in()
+                                  ^^^^^^^^^^^^
+
+conftest.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+conftest.py:129: in _logged_in
+    drv = _prepare(True)
+          ^^^^^^^^^^^^^^
+conftest.py:66: in _prepare
+    raise last
+conftest.py:40: in _prepare
+    drv = helpers.make_driver()
+          ^^^^^^^^^^^^^^^^^^^^^
+helpers.py:116: in make_driver
+    return webdriver.Remote(SERVER, options=opts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\appium\webdriver\webdriver.py:261: in __init__
+    super().__init__(
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:356: in __init__
+    self.start_session(capabilities)
+..\venv\Lib\site-packages\appium\webdriver\webdriver.py:372: in start_session
+    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:566: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x000001F82E42BF00&gt;
+response = {'status': 500, 'value': '{"value":{"error":"unknown error","message":"An unknown server-side error occurred while pro...\npm\\\\node_modules\\\\appium\\\\node_modules\\\\@appium\\\\base-driver\\\\lib\\\\protocol\\\\protocol.js:487:57)"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Check that a JSON response from the WebDriver does not have an error.
+    
+        Args:
+            response: The JSON response from the WebDriver server as a dictionary
+                object.
+    
+        Raises:
+            WebDriverException: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message") if isinstance(message, dict) else None
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response.get("value")
+        if isinstance(value, str):
+            raise exception_class(value)
+        if isinstance(value, dict):
+            if message == "" and "message" in value:
+                message = value["message"]
+    
+            screen = None  # type: ignore[assignment]
+            if "screen" in value:
+                screen = value["screen"]
+    
+            stacktrace = None
+            st_value = value.get("stackTrace") or value.get("stacktrace")
+            if st_value:
+                if isinstance(st_value, str):
+                    stacktrace = st_value.split("\n")
+                else:
+                    stacktrace = []
+                    try:
+                        for frame in st_value:
+                            line = frame.get("lineNumber", "")
+                            file = frame.get("fileName", "&lt;anonymous&gt;")
+                            if line:
+                                file = f"{file}:{line}"
+                            meth = frame.get("methodName", "&lt;anonymous&gt;")
+                            if "className" in frame:
+                                meth = f"{frame['className']}.{meth}"
+                            msg = "    at %s (%s)"
+                            msg = msg % (meth, file)
+                            stacktrace.append(msg)
+                    except TypeError:
+                        pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if isinstance(value, dict):
+                if "data" in value:
+                    alert_text = value["data"].get("text")
+                elif "alert" in value:
+                    alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: Could not find a connected Android device in 20000ms
+E       Stacktrace:
+E       UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not find a connected Android device in 20000ms
+E           at getResponseForW3CError (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\protocol\errors.js:1143:9)
+E           at asyncHandler (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\protocol\protocol.js:487:57)
+
+..\venv\Lib\site-packages\selenium\webdriver\remote\errorhandler.py:234: WebDriverException</error></testcase><testcase classname="test_apk_orders" name="test_orders_search_special_characters_do_not_crash" time="69.538"><error message="failed on setup with &quot;selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: Could not find a connected Android device in 20000ms&#10;Stacktrace:&#10;UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not find a connected Android device in 20000ms&#10;[+2 more lines; full report in element text]">dashboard = &lt;appium.webdriver.webdriver.WebDriver (session="636af33e-9b50-4371-b56b-41238697c72a")&gt;
+
+    @pytest.fixture
+    def home(dashboard):
+        """Make sure each test starts on the Home tab. If the Appium helper crashed, log in again with a new session."""
+        d = _SHARED["dash"]
+        try:
+&gt;           on_home = ui.on_dashboard(d)
+                      ^^^^^^^^^^^^^^^^^^
+
+conftest.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+ui.py:112: in on_dashboard
+    return len(d.find_elements(*by_id("tv_stat_total"))) &gt; 0
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:1005: in find_elements
+    return self.execute(Command.FIND_ELEMENTS, {"using": by, "value": value})["value"] or []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:566: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;appium.webdriver.errorhandler.MobileErrorHandler object at 0x000001F82F858F50&gt;
+response = {'status': 404, 'value': '{"value":{"error":"invalid session id","message":"A session is either terminated or not star...\\\WSSPC-009\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\appium\\\\node_modules\\\\raw-body\\\\index.js:287:7)"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """
+        https://www.w3.org/TR/webdriver/#errors
+        """
+        payload = response.get('value', '')
+        if isinstance(payload, dict):
+            payload_dict = payload
+        else:
+            try:
+                payload_dict = json.loads(payload)
+            except (json.JSONDecodeError, TypeError):
+                return
+            if not isinstance(payload_dict, dict):
+                return
+        value = payload_dict.get('value')
+        if not isinstance(value, dict):
+            return
+        error = value.get('error')
+        if not error:
+            return
+    
+        message = value.get('message', error)
+        stacktrace = value.get('stacktrace', '')
+        # In theory, we should also be checking HTTP status codes.
+        # Java client, for example, prints a warning if the actual `error`
+        # value does not match to the response's HTTP status code.
+        exception_class: type[sel_exceptions.WebDriverException] = ERROR_TO_EXC_MAPPING.get(
+            error, sel_exceptions.WebDriverException
+        )
+        if exception_class is sel_exceptions.WebDriverException and message:
+            if message == 'No such context found.':
+                exception_class = appium_exceptions.NoSuchContextException
+            elif message == 'That command could not be executed in the current context.':
+                exception_class = appium_exceptions.InvalidSwitchToTargetException
+    
+        if exception_class is sel_exceptions.UnexpectedAlertPresentException:
+            raise sel_exceptions.UnexpectedAlertPresentException(
+                msg=message,
+                stacktrace=format_stacktrace(stacktrace),
+                alert_text=value.get('data'),
+            )
+&gt;       raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))
+E       selenium.common.exceptions.InvalidSessionIdException: Message: A session is either terminated or not started; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+E       Stacktrace:
+E       NoSuchDriverError: A session is either terminated or not started
+E           at asyncHandler (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\protocol\protocol.js:311:15)
+E           at C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\protocol\protocol.js:514:15
+E           at Layer.handle [as handle_request] (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\layer.js:95:5)
+E           at next (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\route.js:149:13)
+E           at Route.dispatch (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\route.js:119:3)
+E           at Layer.handle [as handle_request] (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\layer.js:95:5)
+E           at C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:284:15
+E           at param (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:365:14)
+E           at param (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:376:14)
+E           at Function.process_params (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:421:3)
+E           at next (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:280:10)
+E           at logger (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\morgan\index.js:144:5)
+E           at Layer.handle [as handle_request] (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\layer.js:95:5)
+E           at trim_prefix (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:328:13)
+E           at C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:286:9
+E           at Function.process_params (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:346:12)
+E           at next (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\express\lib\router\index.js:280:10)
+E           at C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\body-parser\lib\read.js:137:5
+E           at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+E           at invokeCallback (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\raw-body\index.js:238:16)
+E           at done (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\raw-body\index.js:227:7)
+E           at IncomingMessage.onEnd (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\raw-body\index.js:287:7)
+
+..\venv\Lib\site-packages\appium\webdriver\errorhandler.py:126: InvalidSessionIdException
+
+During handling of the above exception, another exception occurred:
+
+dashboard = &lt;appium.webdriver.webdriver.WebDriver (session="636af33e-9b50-4371-b56b-41238697c72a")&gt;
+
+    @pytest.fixture
+    def home(dashboard):
+        """Make sure each test starts on the Home tab. If the Appium helper crashed, log in again with a new session."""
+        d = _SHARED["dash"]
+        try:
+            on_home = ui.on_dashboard(d)
+        except Exception:
+            _quit(d)
+&gt;           d = _SHARED["dash"] = _logged_in()
+                                  ^^^^^^^^^^^^
+
+conftest.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+conftest.py:129: in _logged_in
+    drv = _prepare(True)
+          ^^^^^^^^^^^^^^
+conftest.py:66: in _prepare
+    raise last
+conftest.py:40: in _prepare
+    drv = helpers.make_driver()
+          ^^^^^^^^^^^^^^^^^^^^^
+helpers.py:116: in make_driver
+    return webdriver.Remote(SERVER, options=opts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\appium\webdriver\webdriver.py:261: in __init__
+    super().__init__(
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:356: in __init__
+    self.start_session(capabilities)
+..\venv\Lib\site-packages\appium\webdriver\webdriver.py:372: in start_session
+    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:566: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x000001F82E376F50&gt;
+response = {'status': 500, 'value': '{"value":{"error":"unknown error","message":"An unknown server-side error occurred while pro...\npm\\\\node_modules\\\\appium\\\\node_modules\\\\@appium\\\\base-driver\\\\lib\\\\protocol\\\\protocol.js:487:57)"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Check that a JSON response from the WebDriver does not have an error.
+    
+        Args:
+            response: The JSON response from the WebDriver server as a dictionary
+                object.
+    
+        Raises:
+            WebDriverException: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message") if isinstance(message, dict) else None
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response.get("value")
+        if isinstance(value, str):
+            raise exception_class(value)
+        if isinstance(value, dict):
+            if message == "" and "message" in value:
+                message = value["message"]
+    
+            screen = None  # type: ignore[assignment]
+            if "screen" in value:
+                screen = value["screen"]
+    
+            stacktrace = None
+            st_value = value.get("stackTrace") or value.get("stacktrace")
+            if st_value:
+                if isinstance(st_value, str):
+                    stacktrace = st_value.split("\n")
+                else:
+                    stacktrace = []
+                    try:
+                        for frame in st_value:
+                            line = frame.get("lineNumber", "")
+                            file = frame.get("fileName", "&lt;anonymous&gt;")
+                            if line:
+                                file = f"{file}:{line}"
+                            meth = frame.get("methodName", "&lt;anonymous&gt;")
+                            if "className" in frame:
+                                meth = f"{frame['className']}.{meth}"
+                            msg = "    at %s (%s)"
+                            msg = msg % (meth, file)
+                            stacktrace.append(msg)
+                    except TypeError:
+                        pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if isinstance(value, dict):
+                if "data" in value:
+                    alert_text = value["data"].get("text")
+                elif "alert" in value:
+                    alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.WebDriverException: Message: An unknown server-side error occurred while processing the command. Original error: Could not find a connected Android device in 20000ms
+E       Stacktrace:
+E       UnknownError: An unknown server-side error occurred while processing the command. Original error: Could not find a connected Android device in 20000ms
+E           at getResponseForW3CError (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\protocol\errors.js:1143:9)
+E           at asyncHandler (C:\Users\WSSPC-009\AppData\Roaming\npm\node_modules\appium\node_modules\@appium\base-driver\lib\protocol\protocol.js:487:57)
+
+..\venv\Lib\site-packages\selenium\webdriver\remote\errorhandler.py:234: WebDriverException</error></testcase><testcase classname="test_apk_orders" name="test_orders_back_returns_to_home" time="109.701" /><testcase classname="test_apk_orders" name="test_orders_cancelled_item_not_counted_as_served" time="7.145" /><testcase classname="test_apk_orders" name="test_orders_screen_survives_rotation" time="14.295" /></testsuite></testsuites>
